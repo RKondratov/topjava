@@ -82,7 +82,9 @@ public class UserMealsUtil {
 
                 // accumulator
                 (c, e) -> {
-                    c.getKey().add(e);
+                    if (TimeUtil.isBetweenHalfOpen(e.getDateTime().toLocalTime(), startTime, endTime)){
+                        c.getKey().add(e);
+                    }
                     c.getValue().merge(e.getDateTime().toLocalDate(), e.getCalories(), Integer::sum);
                 },
 
@@ -94,7 +96,6 @@ public class UserMealsUtil {
 
                 // finisher
                 c -> c.getKey().stream()
-                        .filter(v -> TimeUtil.isBetweenHalfOpen(v.getDateTime().toLocalTime(), startTime, endTime))
                         .map(v -> new UserMealWithExcess(v.getDateTime(), v.getDescription(), v.getCalories(),
                                 c.getValue().get(v.getDateTime().toLocalDate()) > caloriesPerDay))
                         .collect(Collectors.toList()));
