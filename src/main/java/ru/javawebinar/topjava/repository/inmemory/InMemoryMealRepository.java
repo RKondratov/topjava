@@ -1,24 +1,32 @@
 package ru.javawebinar.topjava.repository.inmemory;
 
+import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.MealsUtil;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static java.util.Comparator.comparing;
+import static java.util.stream.Collectors.toList;
+
+@Repository
 public class InMemoryMealRepository implements MealRepository {
     private final Map<Integer, Meal> repository = new ConcurrentHashMap<>();
     private final AtomicInteger counter = new AtomicInteger(0);
 
     {
-        MealsUtil.meals.forEach(this::save);
+        MealsUtil.meals.forEach(meal -> save(meal.getUserId(), meal));
     }
 
     @Override
-    public Meal save(Meal meal) {
+    public Meal save(Integer userId, Meal meal) {
+        if(meal.getUserId() == null || !meal.getUserId().equals(userId)){
+            return null;
+        }
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
             repository.put(meal.getId(), meal);
@@ -29,18 +37,25 @@ public class InMemoryMealRepository implements MealRepository {
     }
 
     @Override
-    public boolean delete(int id) {
-        return repository.remove(id) != null;
+    public boolean delete(Integer userId, int id) {
+        if (repository.get(id) == null || !repository.get(id).getUserId().equals(userId)) {
+            return false;
+        }
+        repository.remove(id);
+        return true;
     }
 
     @Override
-    public Meal get(int id) {
+    public Meal get(Integer userId, int id) {
+        if (repository.get(id) == null || !repository.get(id).getUserId().equals(userId)) {
+            return null;
+        }
         return repository.get(id);
     }
 
     @Override
-    public Collection<Meal> getAll() {
-        return repository.values();
+    public List<Meal> getAll() {
+        return repository.values().stream().sorted(comparing(Meal::getDate).reversed()).collect(toList());
     }
 }
 
