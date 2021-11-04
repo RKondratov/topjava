@@ -14,11 +14,11 @@ INSERT INTO user_roles (role, user_id)
 VALUES ('USER', 100000),
        ('ADMIN', 100001);
 
-INSERT INTO meals (date_time, description, calories, user_id)
-VALUES (to_timestamp('30.01.2020 10:00:00', 'DD.MM.YYYY HH24:MI:SS'), 'Завтрак', 500, 100000),
-       (to_timestamp('30.01.2020 13:00:00', 'DD.MM.YYYY HH24:MI:SS'), 'Обед', 1000, 100000),
-       (to_timestamp('30.01.2020 20:00:00', 'DD.MM.YYYY HH24:MI:SS'), 'Ужин', 500, 100000),
-       (to_timestamp('31.01.2020 00:00:00', 'DD.MM.YYYY HH24:MI:SS'), 'Еда на граничное значение', 100, 100000),
-       (to_timestamp('31.01.2020 10:00:00', 'DD.MM.YYYY HH24:MI:SS'), 'Завтрак', 1000, 100000),
-       (to_timestamp('31.01.2020 13:00:00', 'DD.MM.YYYY HH24:MI:SS'), 'Обед', 500, 100000),
-       (to_timestamp('31.01.2020 20:00:00', 'DD.MM.YYYY HH24:MI:SS'), 'Ужин', 410, 100000);
+INSERT INTO meals (id, date_time, description, calories, user_id)
+VALUES (1, to_timestamp('30.01.2020 10:00:00', 'DD.MM.YYYY HH24:MI:SS'), 'Завтрак', 500, 100000),
+       (2, to_timestamp('30.01.2020 13:00:00', 'DD.MM.YYYY HH24:MI:SS'), 'Обед', 1000, 100000),
+       (3, to_timestamp('30.01.2020 20:00:00', 'DD.MM.YYYY HH24:MI:SS'), 'Ужин', 500, 100000),
+       (4, to_timestamp('31.01.2020 00:00:00', 'DD.MM.YYYY HH24:MI:SS'), 'Еда на граничное значение', 100, 100000),
+       (5, to_timestamp('31.01.2020 10:00:00', 'DD.MM.YYYY HH24:MI:SS'), 'Завтрак', 1000, 100000),
+       (6, to_timestamp('31.01.2020 13:00:00', 'DD.MM.YYYY HH24:MI:SS'), 'Обед', 500, 100000),
+       (7, to_timestamp('31.01.2020 20:00:00', 'DD.MM.YYYY HH24:MI:SS'), 'Ужин', 410, 100000);
