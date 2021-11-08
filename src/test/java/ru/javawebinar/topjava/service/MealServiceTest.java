@@ -1,7 +1,14 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestName;
+import org.junit.rules.TestRule;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.ContextConfiguration;
@@ -14,6 +21,7 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 import javax.persistence.NoResultException;
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.Date;
 
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -27,6 +35,28 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
+    private static final Logger LOG = LoggerFactory.getLogger(MealServiceTest.class);
+
+    @Rule
+    public final TestRule rule = new TestWatcher() {
+        long startTime = 0;
+        long finishedTime = 0;
+
+        @Override
+        protected void starting(Description description) {
+            startTime = new Date().getTime();
+            super.starting(description);
+        }
+
+        @Override
+        protected void finished(Description description) {
+            finishedTime = new Date().getTime();
+            LOG.info(String.format("\n\n-------- Test '%s' finished, processing time: %s mills ------\n", name.getMethodName(), finishedTime - startTime));
+        }
+    };
+
+    @Rule
+    public final TestName name = new TestName();
 
     @Autowired
     private MealService service;
