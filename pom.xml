@@ -234,33 +234,12 @@
 
         <profile>
             <id>jdbc</id>
-            <dependencies>
-<!--                <dependency>-->
-<!--                    <groupId>org.jdbc</groupId>-->
-<!--                    <artifactId>jdbc</artifactId>-->
-<!--                    <version>2.3.4</version>-->
-<!--                </dependency>-->
-            </dependencies>
         </profile>
         <profile>
             <id>jpa</id>
-            <dependencies>
-                <!--                <dependency>-->
-                <!--                    <groupId>org.jdbc</groupId>-->
-                <!--                    <artifactId>jdbc</artifactId>-->
-                <!--                    <version>2.3.4</version>-->
-                <!--                </dependency>-->
-            </dependencies>
         </profile>
         <profile>
             <id>datajpa</id>
-            <dependencies>
-                <!--                <dependency>-->
-                <!--                    <groupId>org.jdbc</groupId>-->
-                <!--                    <artifactId>jdbc</artifactId>-->
-                <!--                    <version>2.3.4</version>-->
-                <!--                </dependency>-->
-            </dependencies>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
