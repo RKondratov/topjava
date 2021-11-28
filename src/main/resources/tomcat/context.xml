@@ -36,7 +36,7 @@
     <Resource name="jdbc/topjava"
               auth="Container"
               type="javax.sql.DataSource"
-              url="jdbc:postgresql://localhost:5432/topjava"
+              url="jdbc:postgresql://localhost:5444/topjava"
               username="user"
               password="password"
               driverClassName="org.postgresql.Driver"
