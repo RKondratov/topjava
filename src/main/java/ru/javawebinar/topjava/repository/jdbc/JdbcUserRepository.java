@@ -1,19 +1,29 @@
 package ru.javawebinar.topjava.repository.jdbc;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Repository
+@Transactional(readOnly = true)
 public class JdbcUserRepository implements UserRepository {
 
     private static final BeanPropertyRowMapper<User> ROW_MAPPER = BeanPropertyRowMapper.newInstance(User.class);
@@ -35,6 +45,7 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     @Override
+    @Transactional
     public User save(User user) {
         BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(user);
 
@@ -51,6 +62,7 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     @Override
+    @Transactional
     public boolean delete(int id) {
         return jdbcTemplate.update("DELETE FROM users WHERE id=?", id) != 0;
     }
@@ -64,12 +76,46 @@ public class JdbcUserRepository implements UserRepository {
     @Override
     public User getByEmail(String email) {
 //        return jdbcTemplate.queryForObject("SELECT * FROM users WHERE email=?", ROW_MAPPER, email);
-        List<User> users = jdbcTemplate.query("SELECT * FROM users WHERE email=?", ROW_MAPPER, email);
+        List<User> users = jdbcTemplate.query("SELECT * FROM users LEFT JOIN public.user_roles ur on users.id = ur.user_id WHERE email=?", new UserRowMapper(), email);
         return DataAccessUtils.singleResult(users);
     }
 
     @Override
     public List<User> getAll() {
         return jdbcTemplate.query("SELECT * FROM users ORDER BY name, email", ROW_MAPPER);
+    }
+
+    public static class UserRowMapper implements RowMapper {
+        public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+            UserResultSetExtractor extractor = new UserResultSetExtractor();
+            return extractor.extractData(rs);
+        }
+    }
+
+    private static class UserResultSetExtractor implements ResultSetExtractor {
+
+        public Object extractData(ResultSet rs) throws SQLException,
+                DataAccessException {
+            User user = new User();
+            user.setId(rs.getInt("ID"));
+            user.setName(rs.getString("NAME"));
+            user.setEmail(rs.getString("EMAIL"));
+            user.setPassword(rs.getString("PASSWORD"));
+            user.setRegistered(rs.getDate("REGISTERED"));
+            user.setEnabled(rs.getBoolean("ENABLED"));
+            user.setCaloriesPerDay(rs.getInt("CALORIES_PER_DAY"));
+            Set<Role> set = user.getRoles();
+            if (set == null) {
+                set = new HashSet<>();
+            }
+            set.add(Role.valueOf(rs.getString("ROLE")));
+            while (rs.next()){
+                if(user.getId() == rs.getInt("ID"))
+                set.add(Role.valueOf(rs.getString("ROLE")));
+            }
+            user.setRoles(set);
+            return user;
+        }
+
     }
 }
